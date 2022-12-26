@@ -8,14 +8,12 @@ const Schema = mongoose.Schema({
     nom : { type: String, required : true},
     prenom : { type: String, required : true},
     age : { type: Number, required : true},
-
 });
 
 
 // Exportation du module
 // "fiche_user" : ce sera le nom du fichier qui sera créé dans MongoDB
 module.exports = mongoose.model('fiche_user', Schema);
-
 
 
 

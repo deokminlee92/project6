@@ -28,4 +28,3 @@ router.delete("/:id", auth, ficheUser.deleteOneFicheUser )
 
 module.exports = router;
 
-
