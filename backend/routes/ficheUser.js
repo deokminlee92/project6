@@ -3,7 +3,7 @@ const express = require('express');
 
 //importation du controllers/user.js
 const ficheUser = require('../controllers/ficheUser');
-const { route } = require('./user');
+// const { route } = require('./user');
 
 //fonction Router()
 const router = express.Router();
@@ -11,9 +11,11 @@ const router = express.Router();
 //importation du middleware d'auth
 const auth = require('../middleware/auth');
 
+
+const multer = require("../middleware/multer");
 //Les routes
 // Suite de la route dans app.js + fonction qu'il y a dans controllers/ficheUser
-router.post("/", auth, ficheUser.createFicheUser);
+router.post("/", auth, multer, ficheUser.createFicheUser);
 
 // afficher toutes les données du routes/ficheUser
 router.get("/", auth,ficheUser.readAllFicheUser);
