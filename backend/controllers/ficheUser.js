@@ -1,13 +1,16 @@
 //Importation du models de la base de donnée MongoDB
 const Sauce = require('../models/FicheUser');
 
+//importation du module fs node.js pour accéder aux fichiers du server
+const fs = require('fs');
+
 exports.createSauce = (req, res, next) => {
-    console.log("Contenu req.body --- controllers.ficheUser");
-    console.log(req.body);
+    // console.log("Contenu req.body --- controllers.ficheUser");
+    // console.log(req.body);
     console.log("Contenu req.body.sauce --- controllers.ficheUser");
     console.log(req.body.sauce);
-    
-    ////////////수정판 JSON.parse() 를 사용할 필요 없음 pour req.body.sauce
+    //이미 JSON 형태인데 왜 ? 
+    // 그렇다면 sauce 를 가져올 때 String 형태로 받아야 하는게 정상
     const sauceObject = JSON.parse(req.body.sauce);
 
     console.log("Contenu sauceObject --- controllers.ficheUser");
@@ -36,37 +39,6 @@ exports.createSauce = (req, res, next) => {
         })
     })
     .catch((error) => res.status(400).json({error}))
-
-
-    ///////////수정판
-
-    // const sauceObject = JSON.parse(req.body.sauce);
-    // console.log("Contenu sauceObject --- controllers.sauceCtrl");
-    // console.log(sauceObject);
-
-    // console.log("-----> Pour fabriquer l'URL de l'image ");
-    // console.log(req.protocol);
-    // console.log(req.get("host"));
-    // console.log(req.file.filename);
-
-    //     //l'instance sauceCtrl
-    // const sauce = new Sauce( {
-    //     ...sauceObject,
-    //     imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
-    // });
-    // console.log("---------->Contenu sauce de new Sauce controllers/ficheUser");
-    // console.log(sauce);
-
-    // //enregistrer l'objet dans la database
-    // sauce
-    //     .save()
-    //         .then(() => {
-    //             res.status(201).json({
-    //                 message: "objet enregistré dans la base de donnée",
-    //                 contenu : req.body
-    //             })
-    //         })
-    //             .catch((error) => res.status(400).json({error}))
 };
 
 exports.gettAllSauces = (req, res, next) => {
@@ -94,18 +66,24 @@ exports.getOneSauce = (req, res, next) => {
 
 // Pour modifier un objet qui a été sélectionné par son id
 exports.modifySauce = (req, res, next) => {
-    console.log("----> ROUTE updateOneFicheUser");
+    console.log("----> ROUTE PUT updateOneFicheUser");
     console.log(req.params.id);
     console.log({ _id : req.params.id });
 
-    // //modification qui sera envoyé dans la base de donnée
-    // Sauce
-    //     .updateOne({ _id : req.params.id }, { ...req.body, _id : req.params.id })
-    //     .then(() => res.status(200).json({
-    //         message : "L'objet a été mis à jour",
-    //         contenu : req.body
-    //     }))
-    //     .catch(error => res.status(400).json({error}))
+    console.log("---->CONTENU PUT : req.body");
+    console.log(req.body);
+
+    console.log("---->CONTENU PUT : req.file");
+    console.log(req.file);
+
+    //modification qui sera envoyé dans la base de donnée
+    Sauce
+        .updateOne({ _id : req.params.id }, { ...req.body, _id : req.params.id })
+        .then(() => res.status(200).json({
+            message : "L'objet a été mis à jour",
+            contenu : req.body
+        }))
+        .catch(error => res.status(400).json({error}))
 }
 
 // Suppression d'un objet sélectionné

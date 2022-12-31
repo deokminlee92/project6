@@ -23,7 +23,7 @@ router.get("/", auth,sauceCtrl.gettAllSauces);
 //_id:ObjectIf("")  // la route get pour afficher un objet grâce à son id
 router.get("/:id", auth,sauceCtrl.getOneSauce);
 
-router.put("/:id", auth,sauceCtrl.modifySauce);
+router.put("/:id", auth, multer, sauceCtrl.modifySauce);
 
 router.delete("/:id", auth, sauceCtrl.deleteSauce )
 
