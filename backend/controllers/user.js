@@ -89,7 +89,7 @@ User.findOne({email : emailCryptoJs })
                     // trois arguments
                     {userId : user._id},
                     `${process.env.JWT_KEY_TOKEN}`,
-                    {expiresIn : "1h" }
+                    {expiresIn : "10h" }
                 ) 
             })
         })

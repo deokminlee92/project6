@@ -6,15 +6,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema({
     userId : { type: String, required: true},
     nom : { type: String, required : true},
-    prenom : { type: String, required : true},
-    age : { type: Number, required : true},
-    photoProfilUrl : { type: String, required : true}
+    manufacturer : { type: String, required : true},
+    description : { type: String, required : true},
+    mainPepper : { type: String, required : true},
+    imageUrl : { type: String, required : true}
 });
 
 
 // Exportation du module
-// "fiche_user" : ce sera le nom du fichier qui sera créé dans MongoDB
-module.exports = mongoose.model('fiche_user', Schema);
+module.exports = mongoose.model('Sauce', Schema);
 
 
 

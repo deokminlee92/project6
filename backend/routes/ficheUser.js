@@ -2,7 +2,7 @@ const express = require('express');
 // const auth = require('../middleware/auth');
 
 //importation du controllers/user.js
-const ficheUser = require('../controllers/ficheUser');
+const sauceCtrl = require('../controllers/ficheUser');
 // const { route } = require('./user');
 
 //fonction Router()
@@ -15,17 +15,17 @@ const auth = require('../middleware/auth');
 const multer = require("../middleware/multer");
 //Les routes
 // Suite de la route dans app.js + fonction qu'il y a dans controllers/ficheUser
-router.post("/", auth, multer, ficheUser.createFicheUser);
+router.post("/", auth, multer, sauceCtrl.createSauce);
 
 // afficher toutes les données du routes/ficheUser
-router.get("/", auth,ficheUser.readAllFicheUser);
+router.get("/", auth,sauceCtrl.gettAllSauces);
 
 //_id:ObjectIf("")  // la route get pour afficher un objet grâce à son id
-router.get("/:id", auth,ficheUser.readOneFicheUser);
+router.get("/:id", auth,sauceCtrl.getOneSauce);
 
-router.put("/:id", auth,ficheUser.updateOneFicheUser);
+router.put("/:id", auth,sauceCtrl.modifySauce);
 
-router.delete("/:id", auth, ficheUser.deleteOneFicheUser )
+router.delete("/:id", auth, sauceCtrl.deleteSauce )
 
 
 module.exports = router;

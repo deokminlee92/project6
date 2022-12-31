@@ -1,48 +1,88 @@
 //Importation du models de la base de donnée MongoDB
-const FicheUser = require('../models/FicheUser');
+const Sauce = require('../models/FicheUser');
 
-exports.createFicheUser = (req, res, next) => {
+exports.createSauce = (req, res, next) => {
     console.log("Contenu req.body --- controllers.ficheUser");
     console.log(req.body);
+    console.log("Contenu req.body.sauce --- controllers.ficheUser");
+    console.log(req.body.sauce);
+    
+    ////////////수정판 JSON.parse() 를 사용할 필요 없음 pour req.body.sauce
+    const sauceObject = JSON.parse(req.body.sauce);
 
-    //Pas besoin d'utiliser un JSON.parse(); pour req.body.ficheUser
-    const userFicheObject = req.body;
-    console.log("Contenu userFicheObject --- controllers.ficheUser");
-    console.log(userFicheObject);
+    console.log("Contenu sauceObject --- controllers.ficheUser");
+    console.log(sauceObject);
 
-        //l'instance FicheUser
-    const ficheUser = new FicheUser( {
-        ...userFicheObject
+    console.log("------->Pour Fabriquer l'URL de l'image - controllers/ficheUser");
+    console.log(req.protocol);
+    console.log(req.get("host"));
+    console.log(req.file.filename);
+
+    //instance Sauce
+    const sauce = new Sauce({
+        ...sauceObject,
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
     });
-    console.log("---------->Contenu ficheUser de new FicheUser controllers/ficheUser");
-    console.log(ficheUser);
+    console.log("---------->Contenu sauce de new Sauce controllers/ficheUser");
+    console.log(sauce);
 
-    //enregistrer l'objet dans la database
-    ficheUser
-        .save()
-            .then(() => {
-                res.status(201).json({
-                    message: "objet enregistré dans la base de donnée",
-                    contenu : req.body
-                })
-            })
-                .catch((error) => res.status(400).json({error}))
-}
+    //enregistrer l'objet dans la base de donnée
+    sauce
+    .save()
+    .then(() => {
+        res.status(201).json({
+            message : "objet enregistrée dans la base de donnée",
+            contenu : req.body
+        })
+    })
+    .catch((error) => res.status(400).json({error}))
 
-exports.readAllFicheUser = (req, res, next) => {
-    FicheUser
+
+    ///////////수정판
+
+    // const sauceObject = JSON.parse(req.body.sauce);
+    // console.log("Contenu sauceObject --- controllers.sauceCtrl");
+    // console.log(sauceObject);
+
+    // console.log("-----> Pour fabriquer l'URL de l'image ");
+    // console.log(req.protocol);
+    // console.log(req.get("host"));
+    // console.log(req.file.filename);
+
+    //     //l'instance sauceCtrl
+    // const sauce = new Sauce( {
+    //     ...sauceObject,
+    //     imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+    // });
+    // console.log("---------->Contenu sauce de new Sauce controllers/ficheUser");
+    // console.log(sauce);
+
+    // //enregistrer l'objet dans la database
+    // sauce
+    //     .save()
+    //         .then(() => {
+    //             res.status(201).json({
+    //                 message: "objet enregistré dans la base de donnée",
+    //                 contenu : req.body
+    //             })
+    //         })
+    //             .catch((error) => res.status(400).json({error}))
+};
+
+exports.gettAllSauces = (req, res, next) => {
+    Sauce
         .find()
         .then((TousLesFichesUser) => res.status(200).json(TousLesFichesUser))
         .catch((error) => res.status(400).json({error}))
 }
 
 // Pour afficher un objet grâce à son id
-exports.readOneFicheUser = (req, res, next) => {
+exports.getOneSauce = (req, res, next) => {
     console.log("----> ROUTE ReadOneFicheUser");
     console.log(req.params.id);
     console.log({ _id : req.params.id });
 
-    FicheUser
+    Sauce
         .findOne({ _id : req.params.id })
         .then((lobjet) => res.status(200).json(lobjet))
         .catch((error) => res.status(404).json({error}))
@@ -53,27 +93,27 @@ exports.readOneFicheUser = (req, res, next) => {
 /////////////////
 
 // Pour modifier un objet qui a été sélectionné par son id
-exports.updateOneFicheUser = (req, res, next) => {
+exports.modifySauce = (req, res, next) => {
     console.log("----> ROUTE updateOneFicheUser");
     console.log(req.params.id);
     console.log({ _id : req.params.id });
 
     // //modification qui sera envoyé dans la base de donnée
-    FicheUser
-        .updateOne({ _id : req.params.id }, { ...req.body, _id : req.params.id })
-        .then(() => res.status(200).json({
-            message : "L'objet a été mis à jour",
-            contenu : req.body
-        }))
-        .catch(error => res.status(400).json({error}))
+    // Sauce
+    //     .updateOne({ _id : req.params.id }, { ...req.body, _id : req.params.id })
+    //     .then(() => res.status(200).json({
+    //         message : "L'objet a été mis à jour",
+    //         contenu : req.body
+    //     }))
+    //     .catch(error => res.status(400).json({error}))
 }
 
 // Suppression d'un objet sélectionné
-exports.deleteOneFicheUser = (req, res, next) => {
+exports.deleteSauce = (req, res, next) => {
     console.log("----> deleteOneFicheUser");
     console.log({ _id : req.params.id });
 
-    FicheUser
+    Sauce
         .deleteOne({ _id : req.params.id })
         .then(() => res.status(200).json({message : "L'objet a été supprimé"}))
         .catch(error => res.status(400).json({error}))

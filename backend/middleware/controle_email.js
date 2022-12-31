@@ -1,18 +1,16 @@
+const validator = require("validator");
 
+module.exports = function(req, res, next){
 
-// const validator = require("validator");
+    const email = req.body.email;
 
-// module.exports = function(req, res, next){
+    if(validator.isEmail(req.body.email)){
+        console.log(`email valide ${email}`);
+        next()
+    }
+    else{
+        console.log("Email non valide");
+        return res.status(400).json({error : `l'email ${email} n'est pas valide`})
 
-//     const email = req.body.email;
-
-//     if(validator.isEmail(req.body.email)){
-//         console.log(`email valide ${email}`);
-//         next()
-//     }
-//     else{
-//         console.log("Email non valide");
-//         return res.status(400).json({error : `l'email ${email} n'est pas valide`})
-
-//     }
-// };
+    }
+};

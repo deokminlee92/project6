@@ -4,6 +4,8 @@
 const multer = require('multer');
 
 // le dictionnaire de MIME TYPES
+
+//++++++++++++Taille de format 
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpg',
@@ -16,16 +18,20 @@ const storage = multer.diskStorage({
     destination : (req, file, callback) => {
         callback(null, 'images');
     },
+    
     filename : (req, file, callback) => {
         //supprimer les espaces dans le nom du fichier
         const name = file.originalname.split(' ').join('_');
         const extension = MIME_TYPES[file.mimetype];
-
+        console.log("------------->FILENAME ");
+        console.log(name);
         //Recréer le nom du fichier envoyé
         //Date.now() envoie le nombre de milleseconde depuis....
-        callback(null, name + "_" + Date.now() + "." + extension);
+        // callback(null, name + "_" + Date.now() + "." + extension);
+        callback(null, `${name}_${Date.now()}.${extension}`);
     }
 });
+
 
 // exportation du middleware multer
 module.exports = multer({storage}).single("image");
