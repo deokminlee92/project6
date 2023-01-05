@@ -63,66 +63,100 @@ exports.getOneSauce = (req, res, next) => {
 
 /////////// A revoir modifySauce
 exports.modifySauce = (req, res, next) => {
-    console.log("----> ROUTE PUT updateOneFicheUser");
-    console.log(req.params.id);
-    console.log({ _id : req.params.id });
+    if (req.file) {
 
-    console.log("---->CONTENU PUT : req.body");
-    console.log(req.body);
+        // Recherche la sauce dans la base de données selon l'_id de la sauce 
+        Sauce.findOne({ 
+            _id: req.params.id 
+        })
+        .then(sauce => {
 
-    console.log("---->CONTENU PUT : req.file");
-    console.log(req.file);
+                // si l'image est modifiée, supprime l'ancienne image dans le dossier /images
+                const filename = sauce.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
 
-    if(req.file){
-        Sauce
-            .findOne({_id : req.params.id})
-            .then((objet) =>{
-                console.log("------>le retour de la promise objet");
-                console.log(objet);
+                    // une fois l'ancienne image supprimée, mise à jour
+                    const sauceObject = {
+                        ...JSON.parse(req.body.sauce),
+                        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                    }
 
-                //récupération du nom de la photo à supprimer dans la base de donnée
-                const filename = objet.imageUrl.split("/images")[1];
-                console.log("--------->filename");
-                console.log(filename);
-
-                //suppression de l'image dans le dossier images du serveur
-                // fs.unlink(`/images/${filename}`, (error) => {
-                //     if(error) throw error;
-                // })
+                    // sauvegarde la mise à jour
+                    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+                        .then(() => res.status(200).json({ message: 'Sauce modifiée!' }))
+                        .catch(error => res.status(400).json({ error }));
+                })
             })
-            .catch((error) => res.status(400).json({error}))
-    }else{
-        console.log("False");
+            .catch(error => res.status(500).json({ error }));
+    } else {
+        // si l'image n'est pas modifiée
+        const sauceObject = { ...req.body };
+        Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'Sauce modifiée!' }))
+            .catch(error => res.status(400).json({ error }));
     }
+};
+// exports.modifySauce = (req, res, next) => {
+//     console.log("----> ROUTE PUT updateOneFicheUser");
+//     console.log(req.params.id);
+//     console.log({ _id : req.params.id });
 
-    //l'objet qui va être mise à jour
-    console.log("--------> CONTENU : req.body");
-    console.log(req.body);
-    console.log("-------> CONTENU : req.body.sauce");
-    console.log(req.body.sauce);
+//     console.log("---->CONTENU PUT : req.body");
+//     console.log(req.body);
 
-    //L'opérateur 
-    //deux cas possible : req.file ? xxxxx : yyyyy
-    const sauceObject = req.file ?
-        //s'il y a un fichier, on éclate lo'bjet et récupère tout et converti en JSON + imageUrl
-        {
-            ...JSON.parse(req.body.sauce),
-            imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
-        } : // si la photo n'a pas été changée
-        { ...req.body}
-        console.log("------->CONTENU PUT sauceObject");
-        console.log(sauceObject);
+//     console.log("---->CONTENU PUT : req.file");
+//     console.log(req.file);
 
-    //Mettre à jour la base de donnée
-    //modification qui sera envoyé dans la base de donnée
-    Sauce
-        .updateOne({ _id : req.params.id }, { ...sauceObject, _id : req.params.id })
-        .then(() => res.status(200).json({
-            message : "L'objet a été mis à jour",
-            contenu : req.body
-        }))
-        .catch(error => res.status(400).json({error}))
-}
+//     if(req.file){
+//         Sauce
+//             .findOne({_id : req.params.id})
+//             .then((sauce) =>{
+//                 console.log("------>le retour de la promise objet");
+//                 console.log(sauce);
+
+//                 //récupération du nom de la photo à supprimer dans la base de donnée
+//                 const filename = sauce.imageUrl.split("/images/")[1];
+//                 console.log("--------->filename");
+//                 console.log(filename);
+
+//                 //suppression de l'image dans le dossier images du serveur
+//                 fs.unlink(`images/${filename}`, (error) => {
+//                     if(error) throw error;
+//                 })
+//             })
+//             .catch((error) => res.status(400).json({error}))
+//     }else{
+//         console.log("False");
+//     }
+
+//     //l'objet qui va être mise à jour
+//     console.log("--------> CONTENU : req.body");
+//     console.log(req.body);
+//     console.log("-------> CONTENU : req.body.sauce");
+//     console.log(req.body.sauce);
+
+//     //L'opérateur 
+//     //deux cas possible : req.file ? xxxxx : yyyyy
+//     const sauceObject = req.file ?
+//         //s'il y a un fichier, on éclate lo'bjet et récupère tout et converti en JSON + imageUrl
+//         {
+//             ...JSON.parse(req.body.sauce),
+//             imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+//         } : // si la photo n'a pas été changée
+//         { ...req.body}
+//         console.log("------->CONTENU PUT sauceObject");
+//         console.log(sauceObject);
+
+//     //Mettre à jour la base de donnée
+//     //modification qui sera envoyé dans la base de donnée
+//     Sauce
+//         .updateOne({ _id : req.params.id }, { ...sauceObject, _id : req.params.id })
+//         .then(() => res.status(200).json({
+//             message : "L'objet a été mis à jour",
+//             contenu : req.body
+//         }))
+//         .catch(error => res.status(400).json({error}))
+// }
 
 
 exports.deleteSauce = (req, res, next) => {
@@ -132,16 +166,37 @@ exports.deleteSauce = (req, res, next) => {
             .then(sauce => {
 
              // Recherche le fichier de l'image
-            const filename = sauce.imageUrl.split('/images/')[1];
 
-             // utilisation de file system pour supprimer l'image dans le dossier /images
-            fs.unlink(`images/${filename}`, () => {
+            console.log("----> sauce");
+            console.log(sauce);
 
-                 // Suppression de la Sauce dans la base de données
-                Sauce.deleteOne({ _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'La sauce a bien été suprimmée !' }))
-                    .catch(error => res.status(400).json({ error }));
-            });
+            console.log("-----> sauce userId");
+            console.log(sauce.userId);
+
+            console.log("----->Req.originalUrl");
+            console.log(req.originalUrl);
+
+            userIdParamsUrl = req.originalUrl.split("=")[1];
+            console.log("------>Affichage de l'userid");
+            console.log(userIdParamsUrl);
+
+            //Controler si userId connecté est autorisé à supprimer l'objet 
+            // en comparant l'userId dans l'objet avec l'userId qui fait la demande
+            if(userIdParamsUrl === sauce.userId){
+                console.log("Authorisation pour suppression de l'objet");
+                const filename = sauce.imageUrl.split('/images/')[1];
+                // utilisation de file system pour supprimer l'image dans le dossier /images
+                fs.unlink(`images/${filename}`, () => {
+                // Suppression de la Sauce dans la base de données
+                   Sauce.deleteOne({ _id: req.params.id })
+                   .then(() => res.status(200).json({ message: 'La sauce a bien été suprimmée !' }))
+                   .catch(error => res.status(400).json({ error }));
+           });
+            }else{
+                throw "userId différent de l'userId objet à supprimer"
+            }
+
+
         })
         .catch(error => res.status(500).json({ error }));
 }
