@@ -14,7 +14,7 @@ const Schema = mongoose.Schema(
         },
         manufacturer : { 
             type: String, 
-
+            required : [true, "Le fabriquant de la sauce est requis"]
         },
         description : { 
             type: String,
@@ -26,7 +26,7 @@ const Schema = mongoose.Schema(
         },
         imageUrl : { 
             type: String,
-            required : [true, "L\'image de la sauce est requise "]
+            required : [true, "L'image de la sauce est requise "]
         },
         heat : { 
             type : Number,
@@ -35,12 +35,12 @@ const Schema = mongoose.Schema(
         likes : { 
             type : Number,
             required : false,
-            defaut: 0
+            default: 0
         },
         dislikes : { 
             type : Number,
             required : false,
-            defaut: 0
+            default: 0
         },
         usersLiked : { 
             type : [String], 

@@ -1,12 +1,8 @@
-// Une fois une requête passé par server.js , ici c'est pour l'application
-
 const express = require('express');
 const dotenv = require('dotenv');
 require('dotenv').config();
-//Importation des routes
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/ficheUser')
-// const ficheUserRoutes = require('./routes/ficheUser');
 
 const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://deokminleeP6:deokminleeP6@cluster0.vzhxams.mongodb.net/test',
@@ -18,9 +14,8 @@ mongoose.connect('mongodb+srv://deokminleeP6:deokminleeP6@cluster0.vzhxams.mongo
 //importation modules path
 const path = require('path');
 
-// fonction middleware intégérée dans Express.
-// Il analyse les demandes entrantes JSON et renvoie un middleware qui analyse JSON
 const app = express();
+
 // Problème de connexion CORS, Ajouté un bloc de code ci-dessous permet d'accéder aux ressources.
 // Accepter les requêtes quelle que soit l'origine
 app.use((req, res, next) => {
@@ -38,7 +33,7 @@ app.use(express.json());
 //userroutes : endpoint
 app.use('/api/auth', userRoutes);
 
-// la route de la fiche user
+// la route de la sauce
 app.use("/api/sauces", sauceRoutes)
 
 // la route pour accéder aux images du dossier images

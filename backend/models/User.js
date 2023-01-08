@@ -1,6 +1,3 @@
-// Ici pour interagir avec la database.
-// Envoyer dans la base de données d'une collection user(email,mdp) 
-
 // importation de mongoose
 const mongoose = require('mongoose');
 
@@ -26,7 +23,6 @@ const userSchema = mongoose.Schema({
 userSchema.plugin(uniqueValidator);
 
 // Exportation du module
-// model(name:'string', schema)
 module.exports = mongoose.model('User', userSchema);
 
 
