@@ -1,7 +1,6 @@
 // Une fois une requête passé par server.js , ici c'est pour l'application
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 require('dotenv').config();
 //Importation des routes
@@ -19,6 +18,8 @@ mongoose.connect('mongodb+srv://deokminleeP6:deokminleeP6@cluster0.vzhxams.mongo
 //importation modules path
 const path = require('path');
 
+// fonction middleware intégérée dans Express.
+// Il analyse les demandes entrantes JSON et renvoie un middleware qui analyse JSON
 const app = express();
 // Problème de connexion CORS, Ajouté un bloc de code ci-dessous permet d'accéder aux ressources.
 // Accepter les requêtes quelle que soit l'origine
@@ -29,8 +30,6 @@ app.use((req, res, next) => {
     next();
 });
 
-//transformer le corps (le body) en json objet JS utilisavble
-app.use(bodyParser.json());
 
 // Gestion de la requête POST venant de l'application front-end, on extraire le corps JSON.
 app.use(express.json());

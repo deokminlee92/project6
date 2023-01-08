@@ -4,14 +4,16 @@ const express = require('express');
 //Fonction Router()
 const router = express.Router();
 
-//Importation du middleware password
+
+//Importation du middleware controlleur de Email et password
+const userEmailCtrl = require("../middleware/controle_email")
 const userPasswordCtrl = require('../middleware/controle_password')
 
 // Importation du controllers/user.js
 const userCtrl = require('../controllers/user');
 
 // deux routes POST
-router.post("/signup",userPasswordCtrl,userCtrl.signup);
+router.post("/signup", userEmailCtrl, userPasswordCtrl, userCtrl.signup);
 router.post('/login', userCtrl.login);
 
 //Exportation du module

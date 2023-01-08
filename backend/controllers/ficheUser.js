@@ -1,3 +1,6 @@
+//* async :  renvoie une promesse resolve ou reject. Lorsqu'une erreur est levée, ça retourne systématiquement une promesse*/
+//* await :  utilisé dans une fonction async. Il permet d'attendre la résolution de la promise et de retourner sa valeur*/
+
 //Importation du models de la base de donnée MongoDB
 const Sauce = require("../models/FicheUser");
 
@@ -5,7 +8,7 @@ const Sauce = require("../models/FicheUser");
 const fs = require("fs");
 const { log } = require("console");
 
-exports.createSauce = (req, res, next) => {
+exports.createSauce = (req, res) => {
   // console.logs("Contenu req.body --- controllers.ficheUser");
   // console.log(req.body);
   console.log("Contenu req.body.sauce --- controllers.ficheUser");
@@ -46,13 +49,13 @@ exports.createSauce = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.gettAllSauces = (req, res, next) => {
+exports.gettAllSauces = (req, res) => {
   Sauce.find()
     .then((TousLesFichesUser) => res.status(200).json(TousLesFichesUser))
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.getOneSauce = (req, res, next) => {
+exports.getOneSauce = (req, res) => {
   console.log("----> ROUTE ReadOneFicheUser");
   console.log(req.params.id);
   console.log({ _id: req.params.id });
@@ -62,8 +65,7 @@ exports.getOneSauce = (req, res, next) => {
     .catch((error) => res.status(404).json({ error }));
 };
 
-/////////// A revoir modifySauce JS187
-exports.modifySauce = (req, res, next) => {
+exports.modifySauce = (req, res) => {
   if (req.file) {
     // Recherche la sauce dans la base de données selon l'_id de la sauce
     Sauce.findOne({
@@ -185,55 +187,191 @@ exports.modifySauce = (req, res, next) => {
 //         .catch((error) => res.status(403).json({error}));
 // };
 
-exports.deleteSauce = (req, res, next) => {
-  // Recherche la sauce dans la base de données selon l'_id de la sauce
-  Sauce.findOne({ _id: req.params.id })
-    .then((sauce) => {
-      // Recherche le fichier de l'image
+// ------------------ Delete Produit --------------------- //
+exports.deleteSauce = (req, res) => {
 
-      console.log("----> sauce");
-      console.log(sauce);
+    // Recherche la sauce dans la base de données selon l'_id de la sauce 
+     Sauce.findOne({ _id: req.params.id })
+         .then(sauce => {
 
-      console.log("-----> sauce userId");
-      console.log(sauce.userId);
+             // Recherche le fichier de l'image
+             const filename = sauce.imageUrl.split('/images/')[1];
 
-      console.log("----->Req.originalUrl");
-      console.log(req.originalUrl);
+             // utilisation de file system pour supprimer l'image dans le dossier /images
+             fs.unlink(`images/${filename}`, () => {
 
-      userIdParamsUrl = req.originalUrl.split("=")[1];
-      console.log("------>Affichage de l'userid");
-      console.log(userIdParamsUrl);
+                 // Suppression de la Sauce dans la base de données
+                 Sauce.deleteOne({ _id: req.params.id })
+                     .then(() => res.status(200).json({ message: 'La sauce a bien été suprimmée !' }))
+                     .catch(error => res.status(400).json({ error }));
+             });
+         })
+         .catch(error => res.status(500).json({ error }));
+ }
 
-      //Controler si userId connecté est autorisé à supprimer l'objet
-      // en comparant l'userId dans l'objet avec l'userId qui fait la demande
-      if (userIdParamsUrl === sauce.userId) {
-        console.log("Authorisation pour suppression de l'objet");
-        const filename = sauce.imageUrl.split("/images/")[1];
-        // utilisation de file system pour supprimer l'image dans le dossier /images
-        fs.unlink(`images/${filename}`, () => {
-          // Suppression de la Sauce dans la base de données
-          Sauce.deleteOne({ _id: req.params.id })
-            .then(() =>
-              res
-                .status(200)
-                .json({ message: "La sauce a bien été suprimmée !" })
-            )
-            .catch((error) => res.status(400).json({ error }));
-        });
-      } else {
-        throw "userId différent de l'userId objet à supprimer";
-      }
-    })
-    .catch((error) => res.status(500).json({ error }));
-};
+
+
+
+// exports.deleteSauce = (req, res, next) => {
+//   // Recherche la sauce dans la base de données selon l'_id de la sauce
+//   Sauce.findOne({ _id: req.params.id })
+//     .then((sauce) => {
+//       // Recherche le fichier de l'image
+
+//       console.log("----> sauce");
+//       console.log(sauce);
+
+//       console.log("-----> sauce userId");
+//       console.log(sauce.userId);
+
+//       console.log("----->Req.originalUrl");
+//       console.log(req.originalUrl);
+
+//       userIdParamsUrl = req.originalUrl.split("=")[1];
+//       console.log("------>Affichage de l'userid");
+//       console.log(userIdParamsUrl);
+
+//       //Controler si userId connecté est autorisé à supprimer l'objet
+//       // en comparant l'userId dans l'objet avec l'userId qui fait la demande
+//       if (userIdParamsUrl === sauce.userId) {
+//         console.log("Authorisation pour suppression de l'objet");
+//         const filename = sauce.imageUrl.split("/images/")[1];
+//         // utilisation de file system pour supprimer l'image dans le dossier /images
+//         fs.unlink(`images/${filename}`, () => {
+//           // Suppression de la Sauce dans la base de données
+//           Sauce.deleteOne({ _id: req.params.id })
+//             .then(() =>
+//               res
+//                 .status(200)
+//                 .json({ message: "La sauce a bien été suprimmée !" })
+//             )
+//             .catch((error) => res.status(400).json({ error }));
+//         });
+//       } else {
+//         throw "userId différent de l'userId objet à supprimer";
+//       }
+//     })
+//     .catch((error) => res.status(500).json({ error }));
+// };
 
 // ---------- LIKE, DISLIKE  ---------- //
 
 // exports.opinionSauce = (req, res, next) => {
 
+
+//     console.log("---> CONTENU req.bodty.likes -- ctrl likes");
+//     console.log(req.body.likes);
+
+//     console.log("----> CONTENU req.params - ctrl like");
+//     console.log(req.params);
+
+//     console.log("----> id en _id");
+//     console.log({_id : req.params.id});
+
+//     Sauce.findOne({_id : req.params.id})
+//     .then((sauce) => {
+//     // like = 1 (like +1)
+//         console.log("------> CONTENU resultat Promise : sauce");
+//         console.log(sauce);
+
+//         //mise en place d'un switch case()
+//         switch(req.body.like) {
+
+//             case 1 : 
+//         //si le userliked est FALSE et si like === 1
+//         // userId vient de (req.body.userId) qui est dans le résultat de la Promise sauce 
+//         // req.body vient de la requête du front
+//         //méthode includes : 
+//         if(!sauce.usersLiked.includes(req.body.userId) && req.body.likes === 1){
+//             console.log("----> userId n'est pas dans usersLiked BDD et requete front like a 1");
+
+
+//         //mise à jour sauce BDD
+//         // {_id : req.params.id} -> l'objet dans la base de données
+//         Sauce.updateOne(
+//             {_id : req.params.id},
+//             {
+//                 // $inc : 
+//                 $inc : {likes : 1},
+//                 // $push :  
+//                 // userId qui aime = req.body.userId
+//                 $push : {usersLiked : req.body.userId}
+//             }
+//             )
+//             .then(() => res.status(201).json({message : "Sauce like +1"}))
+//             .catch((error) => res.status(400).json({error}));
+//         };
+//         break;
+
+//         case -1 : 
+//         //like = -1
+//         //après un like = -1 on met like =0, on enlève le dislike
+//         if(sauce.usersDisliked.includes(req.body.userId) && req.body.likes === 0){
+//             console.log("----> userId est dans usersdisliked Et dislike = 0");
+
+
+//         //mise à jour sauce BDD
+//         // {_id : req.params.id} -> l'objet dans la base de données
+//         Sauce.updateOne(
+//             {_id : req.params.id},
+//             {
+//                 // $inc : 
+//                 $inc : {dislikes : -1},
+//                 //$pull : 
+//                 $pull : {userdisliked : req.body.userId}
+//             }
+//             )
+//             .then(() => res.status(201).json({message : "Sauce like -1"}))
+//             .catch((error) => res.status(400).json({error}));
+//                     } ;
+//                     break;
+
+//                     case 0 : 
+//                             //like = 0 (likes = 0, pas de vote)
+//                         if(sauce.usersLiked.includes(req.body.userId)){
+//                                 console.log("----> userId est dans usersLiked Et like = 0");
+//                             //mise à jour sauce BDD
+//                             // {_id : req.params.id} -> l'objet dans la base de données
+//                             Sauce.updateOne(
+//                                 {_id : req.params.id},
+//                                 {
+//                                     // $inc : 
+//                                     $inc : {likes : -1},
+//                                     //$pull : 
+//                                     $pull : {userLiked : req.body.userId}
+//                                 }
+//                                 )
+//                                 .then(() => res.status(201).json({message : "Sauce like -1"}))
+//                                 .catch((error) => res.status(400).json({error}));
+//                                         } ;
+
+//             // dislike 
+//             if(!sauce.usersDisliked.includes(req.body.userId)){
+//                 console.log("----> userId est dans usersDisliked Et dislike = 1");
+//             //mise à jour sauce BDD
+//             // {_id : req.params.id} -> l'objet dans la base de données
+//             Sauce.updateOne(
+//                 {_id : req.params.id},
+//                 {
+//                     // $inc : 
+//                     $inc : {dislikes : 1},
+//                     //$$push : 
+//                     $push : {userDisliked : req.body.userId}
+//                 }
+//                 )
+//                 .then(() => res.status(201).json({message : "Sauce dislike +1"}))
+//                 .catch((error) => res.status(400).json({error}))
+//                         }
+//                         break;
+//                     }
+//                 }
+//         })
+//         .catch((error) => res.status(404).json({error}))
 // }
 
-exports.opinionSauce = (req, res, next) => {
+
+
+exports.opinionSauce = (req, res) => {
   switch (req.body.like) {
     // Si l'utilisateur supprime son opinion
     case 0:
