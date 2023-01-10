@@ -8,24 +8,7 @@ const { log } = require("console");
 
 // --------- Creation Sauce ----------- // 
 exports.createSauce = (req, res) => {
-  // console.logs("Contenu req.body --- controllers.ficheUser");
-  // console.log(req.body);
-  console.log("Contenu req.body.sauce --- controllers.ficheUser");
-  console.log(req.body.sauce);
-  //이미 JSON 형태인데 왜 ?
-  // 그렇다면 sauce 를 가져올 때 String 형태로 받아야 하는게 정상
   const sauceObject = JSON.parse(req.body.sauce);
-
-  console.log("Contenu sauceObject --- controllers.ficheUser");
-  console.log(sauceObject);
-
-  console.log(
-    "------->Pour Fabriquer l'URL de l'image - controllers/ficheUser"
-  );
-  console.log(req.protocol);
-  console.log(req.get("host"));
-  console.log(req.file.filename);
-
   //instance Sauce
   const sauce = new Sauce({
     ...sauceObject,
@@ -33,9 +16,6 @@ exports.createSauce = (req, res) => {
       req.file.filename
     }`,
   });
-  console.log("---------->Contenu sauce de new Sauce controllers/ficheUser");
-  console.log(sauce);
-
   //enregistrer l'objet dans la base de donnée
   sauce
     .save()
@@ -57,10 +37,6 @@ exports.gettAllSauces = (req, res) => {
 
 // --------- Afficher une sauce séléctionnée ----------- // 
 exports.getOneSauce = (req, res) => {
-  console.log("----> ROUTE ReadOneFicheUser");
-  console.log(req.params.id);
-  console.log({ _id: req.params.id });
-
   Sauce.findOne({ _id: req.params.id })
     .then((lobjet) => res.status(200).json(lobjet))
     .catch((error) => res.status(404).json({ error }));
